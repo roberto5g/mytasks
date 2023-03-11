@@ -21,7 +21,7 @@ public class TaskResponse {
     private UserDTO creator;
     private UserDTO assignee;
     private Long boardId;
-    private List<CommentDTO> comments;
+    private List<CommentResponse> comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

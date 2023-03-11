@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDTO {
+public class CommentResponse {
     private Long id;
     private String description;
-    private UserDTO creator;
-    private Long taskId;
+    private String creator;
+    private Long task;
     private LocalDateTime createdAt;
 }

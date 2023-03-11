@@ -1,6 +1,7 @@
 package com.mytasks.app.mapper;
 
-import com.mytasks.app.dto.CommentDTO;
+import com.mytasks.app.dto.CommentRequest;
+import com.mytasks.app.dto.CommentResponse;
 import com.mytasks.app.model.Comment;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;
@@ -10,17 +11,17 @@ import java.util.stream.Collectors;
 
 public class CommentMapper {
 
-    public static CommentDTO toDTO(Comment comment) {
-        CommentDTO dto = new CommentDTO();
-        dto.setId(comment.getId());
-        dto.setDescription(comment.getDescription());
-        dto.setCreator(UserMapper.toDTO(comment.getCreator()));
-        dto.setTaskId(comment.getTask().getId());
-        dto.setCreatedAt(comment.getCreatedAt());
-        return dto;
+    public static CommentResponse toCommentResponse(Comment comment) {
+        CommentResponse commentResponse = new CommentResponse();
+        commentResponse.setId(comment.getId());
+        commentResponse.setDescription(comment.getDescription());
+        commentResponse.setCreator(comment.getCreator().getName());
+        commentResponse.setTask(comment.getTask().getId());
+        commentResponse.setCreatedAt(comment.getCreatedAt());
+        return commentResponse;
     }
 
-    public static List<Comment> toEntityList(List<CommentDTO> commentDTOList) {
+    /*public static List<Comment> toCommentList(List<CommentRequest> commentDTOList) {
         return commentDTOList.stream().map(
                 commentDTO -> {
                     Comment comment = new Comment();
@@ -36,10 +37,11 @@ public class CommentMapper {
                     return comment;
                 }).collect(Collectors.toList());
     }
+     */
 
-    public static Comment toEntity(CommentDTO commentDTO) {
+    /*public static Comment toComment(CommentRequest commentRequest) {
         Comment comment = new Comment();
-        comment.setId(commentDTO.getId());
+        comment.setId(commentRequest.getId());
         comment.setDescription(commentDTO.getDescription());
         comment.setCreatedAt(commentDTO.getCreatedAt());
         User creator = new User();
@@ -50,9 +52,10 @@ public class CommentMapper {
         comment.setTask(task);
         return comment;
     }
+     */
 
-    public static List<CommentDTO> toDTOList(List<Comment> comments) {
-        return comments.stream().map(CommentMapper::toDTO).collect(Collectors.toList());
+    public static List<CommentResponse> toCommentResponseList(List<Comment> comments) {
+        return comments.stream().map(CommentMapper::toCommentResponse).collect(Collectors.toList());
     }
 
 
