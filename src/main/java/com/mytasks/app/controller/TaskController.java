@@ -1,6 +1,7 @@
 package com.mytasks.app.controller;
 
-import com.mytasks.app.dto.TaskDTO;
+import com.mytasks.app.dto.TaskRequest;
+import com.mytasks.app.dto.TaskResponse;
 import com.mytasks.app.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,26 +18,26 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
-        List<TaskDTO> tasks = taskService.getAllTasks();
+    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+        List<TaskResponse> tasks = taskService.getAllTasks();
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long taskId) {
-        TaskDTO task = taskService.getTaskById(taskId);
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long taskId) {
+        TaskResponse task = taskService.getTaskById(taskId);
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
-        TaskDTO createdTask = taskService.createTask(taskDTO);
+    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest taskRequest) {
+        TaskResponse createdTask = taskService.createTask(taskRequest);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long taskId, @RequestBody TaskDTO taskDTO) {
-        TaskDTO updatedTask = taskService.updateTask(taskId, taskDTO);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId, @RequestBody TaskResponse taskDTO) {
+        TaskResponse updatedTask = taskService.updateTask(taskId, taskDTO);
         return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
 

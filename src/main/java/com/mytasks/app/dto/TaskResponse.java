@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskDTO {
+public class TaskResponse {
     private Long id;
     private String title;
     private String description;

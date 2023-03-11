@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardResponseDetails extends BoardResponse{
-    private List<TaskDTO> tasks;
+    private List<TaskResponse> tasks;
 }
