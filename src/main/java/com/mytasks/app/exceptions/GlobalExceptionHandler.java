@@ -12,13 +12,34 @@ import java.util.Date;
 public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorObject> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BoardNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleBoardNotFoundException(BoardNotFoundException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleTaskNotFoundException(TaskNotFoundException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    private static ErrorObject getErrorObject(String message) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
-        errorObject.setMessage(ex.getMessage());
+        errorObject.setMessage(message);
         errorObject.setTimestamp(new Date());
-
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+        return errorObject;
     }
 
 }

@@ -2,7 +2,9 @@ package com.mytasks.app.service;
 
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
-import com.mytasks.app.exceptions.EntityNotFoundException;
+import com.mytasks.app.exceptions.BoardNotFoundException;
+import com.mytasks.app.exceptions.TaskNotFoundException;
+import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.mapper.TaskMapper;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.model.Task;
@@ -18,10 +20,6 @@ import java.util.List;
 
 @Service
 public class TaskService {
-
-    private static final String TASK_NOT_FOUND = "Task not found with id: ";
-    private static final String USER_NOT_FOUND = "User not found with id: ";
-    private static final String BOARD_NOT_FOUND = "Board not found with id: ";
 
     @Autowired
     private TaskRepository taskRepository;
@@ -39,19 +37,19 @@ public class TaskService {
 
     public TaskResponse getTaskById(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskId));
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
         return TaskMapper.toTaskResponse(task);
     }
     public TaskResponse createTask(TaskRequest taskRequest) {
         User creator = userRepository.findById(taskRequest.getCreator())
-                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getCreator()));
+                .orElseThrow(() -> new UserNotFoundException(taskRequest.getCreator()));
         User assignee = null;
         if(taskRequest.getAssignee() != null){
             assignee = userRepository.findById(taskRequest.getAssignee())
-                    .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getAssignee()));
+                    .orElseThrow(() -> new UserNotFoundException(taskRequest.getAssignee()));
         }
         Board board = boardRepository.findById(taskRequest.getBoardId())
-                .orElseThrow(() -> new EntityNotFoundException(BOARD_NOT_FOUND+taskRequest.getBoardId()));
+                .orElseThrow(() -> new BoardNotFoundException(taskRequest.getBoardId()));
         Task task = TaskMapper.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
@@ -64,14 +62,14 @@ public class TaskService {
 
     public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskId));
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
         User assignee = null;
         if(taskRequest.getAssignee() != null){
             assignee = userRepository.findById(taskRequest.getAssignee())
-                    .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getAssignee()));
+                    .orElseThrow(() -> new UserNotFoundException(taskRequest.getAssignee()));
         }
         Board board = boardRepository.findById(taskRequest.getBoardId())
-                .orElseThrow(() -> new EntityNotFoundException(BOARD_NOT_FOUND+taskRequest.getBoardId()));
+                .orElseThrow(() -> new BoardNotFoundException(taskRequest.getBoardId()));
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setAssignee(assignee);
@@ -84,7 +82,7 @@ public class TaskService {
 
     public void deleteTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND+taskId));
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
         taskRepository.delete(task);
     }
 
