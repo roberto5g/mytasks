@@ -2,7 +2,6 @@ package com.mytasks.app.controller;
 
 import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.BoardResponse;
-import com.mytasks.app.model.Board;
 import com.mytasks.app.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

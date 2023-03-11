@@ -34,7 +34,6 @@ public class TaskMapper {
         task.setDescription(taskRequest.getDescription());
         task.setDueDate(taskRequest.getDueDate());
 
-
         //List<CommentDTO> commentDTOList = taskDTO.getComments();
         //List<Comment> commentList = commentDTOList.stream().map(CommentMapper::toEntity).toList();
         //task.setComments(commentList);

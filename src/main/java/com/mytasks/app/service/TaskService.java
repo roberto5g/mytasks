@@ -15,12 +15,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
 
     private static final String TASK_NOT_FOUND = "Task not found with id: ";
+    private static final String USER_NOT_FOUND = "User not found with id: ";
+    private static final String BOARD_NOT_FOUND = "Board not found with id: ";
 
     @Autowired
     private TaskRepository taskRepository;
@@ -43,14 +44,14 @@ public class TaskService {
     }
     public TaskResponse createTask(TaskRequest taskRequest) {
         User creator = userRepository.findById(taskRequest.getCreator())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: "+taskRequest.getCreator()));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getCreator()));
         User assignee = null;
         if(taskRequest.getAssignee() != null){
             assignee = userRepository.findById(taskRequest.getAssignee())
-                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: "+taskRequest.getAssignee()));
+                    .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getAssignee()));
         }
         Board board = boardRepository.findById(taskRequest.getBoardId())
-                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: "+taskRequest.getBoardId()));
+                .orElseThrow(() -> new EntityNotFoundException(BOARD_NOT_FOUND+taskRequest.getBoardId()));
         Task task = TaskMapper.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
@@ -61,24 +62,30 @@ public class TaskService {
         return TaskMapper.toTaskResponse(createdTask);
     }
 
-    public TaskResponse updateTask(Long taskId, TaskResponse taskDTO) {
+    public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND + taskId));
-        task.setTitle(taskDTO.getTitle());
-        task.setDescription(taskDTO.getDescription());
-        task.setDueDate(taskDTO.getDueDate());
+        User assignee = null;
+        if(taskRequest.getAssignee() != null){
+            assignee = userRepository.findById(taskRequest.getAssignee())
+                    .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND+taskRequest.getAssignee()));
+        }
+        Board board = boardRepository.findById(taskRequest.getBoardId())
+                .orElseThrow(() -> new EntityNotFoundException(BOARD_NOT_FOUND+taskRequest.getBoardId()));
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setAssignee(assignee);
+        task.setBoard(board);
+        task.setDueDate(taskRequest.getDueDate());
         task.setUpdatedAt(LocalDateTime.now());
         Task updatedTask = taskRepository.save(task);
         return TaskMapper.toTaskResponse(updatedTask);
     }
 
     public void deleteTask(Long taskId) {
-        Optional<Task> optionalTask = taskRepository.findById(taskId);
-        if (optionalTask.isPresent()) {
-            taskRepository.delete(optionalTask.get());
-        } else {
-            throw new EntityNotFoundException(TASK_NOT_FOUND + taskId);
-        }
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND+taskId));
+        taskRepository.delete(task);
     }
 
 }
