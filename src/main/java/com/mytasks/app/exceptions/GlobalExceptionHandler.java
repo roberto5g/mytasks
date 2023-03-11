@@ -10,33 +10,39 @@ import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-        ErrorObject errorObject = getErrorObject(ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(AccessForbiddenException.class)
+    public ResponseEntity<ErrorObject> handleEntityNotFoundException(AccessForbiddenException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(errorObject, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorObject> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
-        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BoardNotFoundException.class)
     public ResponseEntity<ErrorObject> handleBoardNotFoundException(BoardNotFoundException ex, WebRequest request) {
-        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<ErrorObject> handleTaskNotFoundException(TaskNotFoundException ex, WebRequest request) {
-        ErrorObject errorObject = getErrorObject(ex.getMessage());
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
 
-    private static ErrorObject getErrorObject(String message) {
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleCommentNotFoundException(CommentNotFoundException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    private static ErrorObject getErrorObject(String message, int statusCode) {
         ErrorObject errorObject = new ErrorObject();
-        errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
+        errorObject.setStatusCode(statusCode);
         errorObject.setMessage(message);
         errorObject.setTimestamp(new Date());
         return errorObject;

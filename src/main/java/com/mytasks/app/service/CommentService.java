@@ -2,6 +2,8 @@ package com.mytasks.app.service;
 
 import com.mytasks.app.dto.CommentRequest;
 import com.mytasks.app.dto.CommentResponse;
+import com.mytasks.app.exceptions.AccessForbiddenException;
+import com.mytasks.app.exceptions.CommentNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
 import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.mapper.CommentMapper;
@@ -46,6 +48,23 @@ public class CommentService {
         comment.setTask(task);
         comment.setCreator(creator);
         comment.setCreatedAt(LocalDateTime.now());
+        return CommentMapper.toCommentResponse(commentRepository.save(comment));
+    }
+
+    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+        //TODO I will change it
+        Long userId = 1L;
+        User creator = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        if (!comment.getCreator().equals(creator)){
+            throw new AccessForbiddenException();
+        }
+
+        comment.setDescription(commentRequest.getDescription());
+        comment.setUpdatedAt(LocalDateTime.now());
         return CommentMapper.toCommentResponse(commentRepository.save(comment));
     }
 }

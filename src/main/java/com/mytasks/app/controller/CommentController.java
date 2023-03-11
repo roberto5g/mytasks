@@ -2,7 +2,6 @@ package com.mytasks.app.controller;
 
 import com.mytasks.app.dto.CommentRequest;
 import com.mytasks.app.dto.CommentResponse;
-import com.mytasks.app.mapper.CommentMapper;
 import com.mytasks.app.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +27,12 @@ public class CommentController {
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentRequest commentRequest){
         CommentResponse commentResponse = commentService.createComment(commentRequest);
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest){
+        CommentResponse updateComment = commentService.updateComment(commentId, commentRequest);
+        return new ResponseEntity<>(updateComment, HttpStatus.OK);
     }
 
 }
