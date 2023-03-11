@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class CommentRequest {
     private String description;
-    private Long creator;
     private Long taskId;
 }

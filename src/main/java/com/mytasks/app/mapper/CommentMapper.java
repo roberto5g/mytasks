@@ -59,4 +59,9 @@ public class CommentMapper {
     }
 
 
+    public static Comment toComment(CommentRequest commentRequest) {
+        Comment comment = new Comment();
+        comment.setDescription(commentRequest.getDescription());
+        return comment;
+    }
 }
