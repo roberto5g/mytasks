@@ -2,6 +2,8 @@ INSERT INTO users (name,email,password)
     VALUES
     ('Roberto','roberto@d.com','$2a$12$YjaiLd8csdBRVBuaX2T2vOxNezQAv3HXLzfybSnbgutC1S5pclApW'),
     ('Santos','santos@d.com','$2a$12$YjaiLd8csdBRVBuaX2T2vOxNezQAv3HXLzfybSnbgutC1S5pclApW');
+INSERT INTO roles (name) VALUES ('USER'),('ADMIN');
+INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);
 INSERT INTO boards (description, title, owner_id, created_at) VALUES ('First Board','Board 1', 1, now()),('Second Board','Board 2', 2, now());
 INSERT INTO tasks (created_at, description, status, due_date, title, updated_at, assignee_id, board_id, creator_id)
     VALUES
