@@ -4,6 +4,8 @@ import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.BoardResponse;
 import com.mytasks.app.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,8 +37,9 @@ public class BoardController {
         return boardService.updateBoard(id, boardRequest);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteBoard(@PathVariable Long id){
-        boardService.deleteBoard(id);
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId){
+        boardService.deleteBoard(boardId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

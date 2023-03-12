@@ -36,20 +36,24 @@ public class TaskService {
     }
 
     public TaskResponse getTaskById(Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(taskId)
+        );
         return TaskMapper.toTaskResponse(task);
     }
     public TaskResponse createTask(TaskRequest taskRequest) {
-        User creator = userRepository.findById(taskRequest.getCreator())
-                .orElseThrow(() -> new UserNotFoundException(taskRequest.getCreator()));
+        User creator = userRepository.findById(taskRequest.getCreator()).orElseThrow(
+                () -> new UserNotFoundException(taskRequest.getCreator())
+        );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = userRepository.findById(taskRequest.getAssignee())
-                    .orElseThrow(() -> new UserNotFoundException(taskRequest.getAssignee()));
+            assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
+                    () -> new UserNotFoundException(taskRequest.getAssignee())
+            );
         }
-        Board board = boardRepository.findById(taskRequest.getBoardId())
-                .orElseThrow(() -> new BoardNotFoundException(taskRequest.getBoardId()));
+        Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(
+                () -> new BoardNotFoundException(taskRequest.getBoardId())
+        );
         Task task = TaskMapper.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
@@ -61,15 +65,18 @@ public class TaskService {
     }
 
     public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(taskId)
+        );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = userRepository.findById(taskRequest.getAssignee())
-                    .orElseThrow(() -> new UserNotFoundException(taskRequest.getAssignee()));
+            assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
+                    () -> new UserNotFoundException(taskRequest.getAssignee())
+            );
         }
-        Board board = boardRepository.findById(taskRequest.getBoardId())
-                .orElseThrow(() -> new BoardNotFoundException(taskRequest.getBoardId()));
+        Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(
+                () -> new BoardNotFoundException(taskRequest.getBoardId())
+        );
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setAssignee(assignee);
@@ -81,8 +88,9 @@ public class TaskService {
     }
 
     public void deleteTask(Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(taskId)
+        );
         taskRepository.delete(task);
     }
 

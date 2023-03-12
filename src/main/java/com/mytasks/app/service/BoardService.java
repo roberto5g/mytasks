@@ -3,6 +3,7 @@ package com.mytasks.app.service;
 import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.BoardResponse;
 import com.mytasks.app.dto.BoardResponseDetails;
+import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
 import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
@@ -31,8 +32,9 @@ public class BoardService {
     }
 
     public BoardResponse createBoard(BoardRequest boardRequest){
-        User owner = userRepository.findById(boardRequest.getOwner())
-                .orElseThrow(() -> new UserNotFoundException(boardRequest.getOwner()));
+        User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
+                () -> new UserNotFoundException(boardRequest.getOwner())
+        );
         Board board = BoardMapper.toEntity(boardRequest);
         board.setOwner(owner);
         board.setCreatedAt(LocalDateTime.now());
@@ -40,29 +42,41 @@ public class BoardService {
     }
 
     public BoardResponseDetails getBoardById(Long id){
-        Board board = boardRepository.findById(id).orElseThrow(() -> new BoardNotFoundException(id));
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new BoardNotFoundException(id)
+        );
         return BoardMapper.toBoardResponseDetails(board);
     }
 
     public BoardResponse updateBoard(Long id, BoardRequest boardRequest){
-        Board existingBoard = boardRepository.findById(id).orElseThrow(
+        Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        User existingUser = userRepository.findById(
-                boardRequest.getOwner()
-        ).orElseThrow(() -> new UserNotFoundException(boardRequest.getOwner()));
-        existingBoard.setTitle(boardRequest.getTitle());
-        existingBoard.setDescription(boardRequest.getDescription());
-        existingBoard.setOwner(existingUser);
-        existingBoard.setUpdatedAt(LocalDateTime.now());
-        return BoardMapper.toBoardResponse(boardRepository.save(existingBoard));
+        User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
+                () -> new UserNotFoundException(boardRequest.getOwner())
+        );
+        if (!board.getOwner().equals(owner)){
+            throw new AccessForbiddenException("update");
+        }
+        board.setTitle(boardRequest.getTitle());
+        board.setDescription(boardRequest.getDescription());
+        board.setOwner(owner);
+        board.setUpdatedAt(LocalDateTime.now());
+        return BoardMapper.toBoardResponse(boardRepository.save(board));
     }
 
-    public void deleteBoard(Long id){
-        Board existingBoard = boardRepository.findById(id).orElseThrow(
-                () -> new BoardNotFoundException(id)
+    public void deleteBoard(Long boardId){
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new BoardNotFoundException(boardId)
         );
-        boardRepository.delete(existingBoard);
+        Long userId = 1L;
+        User owner = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(userId)
+        );
+        if (!board.getOwner().equals(owner)){
+            throw new AccessForbiddenException("delete");
+        }
+        boardRepository.delete(board);
     }
 
 }

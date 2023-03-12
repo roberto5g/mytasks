@@ -31,19 +31,22 @@ public class CommentService {
     private UserRepository userRepository;
 
     public List<CommentResponse> getCommentsByTask(Long taskId){
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(taskId));
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(taskId)
+        );
         List<Comment> comments = commentRepository.findByTaskId(task.getId());
         return comments.stream().map(CommentMapper::toCommentResponse).collect(Collectors.toList());
     }
 
     public CommentResponse createComment(CommentRequest commentRequest) {
-        Task task = taskRepository.findById(commentRequest.getTaskId())
-                .orElseThrow(() -> new TaskNotFoundException(commentRequest.getTaskId()));
+        Task task = taskRepository.findById(commentRequest.getTaskId()).orElseThrow(
+                () -> new TaskNotFoundException(commentRequest.getTaskId())
+        );
         //TODO I will change it
         Long userId = 1L;
-        User creator = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User creator = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(userId)
+        );
         Comment comment = CommentMapper.toComment(commentRequest);
         comment.setTask(task);
         comment.setCreator(creator);
@@ -52,14 +55,16 @@ public class CommentService {
     }
 
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(commentId));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new CommentNotFoundException(commentId)
+        );
         //TODO I will change it
         Long userId = 1L;
-        User creator = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User creator = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(userId)
+        );
         if (!comment.getCreator().equals(creator)){
-            throw new AccessForbiddenException();
+            throw new AccessForbiddenException("edit");
         }
         comment.setDescription(commentRequest.getDescription());
         comment.setUpdatedAt(LocalDateTime.now());
@@ -71,10 +76,11 @@ public class CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
         //TODO I will change it
         Long userId = 1L;
-        User creator = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User creator = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(userId)
+        );
         if (!comment.getCreator().equals(creator)){
-            throw new AccessForbiddenException();
+            throw new AccessForbiddenException("delete");
         }
         commentRepository.delete(comment);
     }
