@@ -40,6 +40,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<ErrorObject> handleUserUpdateException(UserUpdateException ex, WebRequest request) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(errorObject, HttpStatus.CONFLICT);
+    }
+
     private static ErrorObject getErrorObject(String message, int statusCode) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setStatusCode(statusCode);

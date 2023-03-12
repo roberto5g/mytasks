@@ -15,7 +15,7 @@ public class BoardResponse {
     private Long id;
     private String title;
     private String description;
-    private UserDTO owner;
+    private UserResponse owner;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -1,6 +1,7 @@
 package com.mytasks.app.controller;
 
 import com.mytasks.app.dto.UserRequest;
+import com.mytasks.app.dto.UserResponse;
 import com.mytasks.app.model.User;
 import com.mytasks.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,15 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId){
-        return null;
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId){
+        UserResponse userResponse = userService.getUserById(userId);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody UserRequest userRequest){
-        return null;
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @RequestBody UserRequest userRequest){
+        UserResponse userResponse = userService.updateUser(userId, userRequest);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
 }

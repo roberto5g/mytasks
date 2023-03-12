@@ -18,8 +18,8 @@ public class TaskResponse {
     private String title;
     private String description;
     private Date dueDate;
-    private UserDTO creator;
-    private UserDTO assignee;
+    private UserResponse creator;
+    private UserResponse assignee;
     private Long boardId;
     private List<CommentResponse> comments;
     private LocalDateTime createdAt;
