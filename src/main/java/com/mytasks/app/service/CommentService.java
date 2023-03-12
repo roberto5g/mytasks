@@ -58,13 +58,24 @@ public class CommentService {
         Long userId = 1L;
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-
         if (!comment.getCreator().equals(creator)){
             throw new AccessForbiddenException();
         }
-
         comment.setDescription(commentRequest.getDescription());
         comment.setUpdatedAt(LocalDateTime.now());
         return CommentMapper.toCommentResponse(commentRepository.save(comment));
+    }
+
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+        //TODO I will change it
+        Long userId = 1L;
+        User creator = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        if (!comment.getCreator().equals(creator)){
+            throw new AccessForbiddenException();
+        }
+        commentRepository.delete(comment);
     }
 }
