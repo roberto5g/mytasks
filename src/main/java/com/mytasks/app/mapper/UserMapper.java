@@ -11,6 +11,7 @@ public class UserMapper {
         userResponse.setId(user.getId());
         userResponse.setName(user.getName());
         userResponse.setEmail(user.getEmail());
+        userResponse.setRoles(user.getRoles());
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());
         return userResponse;
