@@ -23,7 +23,7 @@ public class BoardMapper {
         boardResponse.setId(board.getId());
         boardResponse.setTitle(board.getTitle());
         boardResponse.setDescription(board.getDescription());
-        boardResponse.setOwner(UserMapper.toUserResponse(board.getOwner()));
+        boardResponse.setOwner(UserMapper.toUserResponseTask(board.getOwner()));
         boardResponse.setCreatedAt(board.getCreatedAt());
         boardResponse.setUpdatedAt(board.getUpdatedAt());
         return boardResponse;
@@ -34,7 +34,7 @@ public class BoardMapper {
         boardDetails.setId(board.getId());
         boardDetails.setTitle(board.getTitle());
         boardDetails.setDescription(board.getDescription());
-        boardDetails.setOwner(UserMapper.toUserResponse(board.getOwner()));
+        boardDetails.setOwner(UserMapper.toUserResponseTask(board.getOwner()));
         boardDetails.setTasks(TaskMapper.toDTOList(board.getTasks()));
         boardDetails.setCreatedAt(board.getCreatedAt());
         boardDetails.setUpdatedAt(board.getUpdatedAt());

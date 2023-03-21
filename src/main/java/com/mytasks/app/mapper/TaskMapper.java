@@ -15,8 +15,8 @@ public class TaskMapper {
         taskDTO.setTitle(task.getTitle());
         taskDTO.setDescription(task.getDescription());
         taskDTO.setDueDate(task.getDueDate());
-        taskDTO.setCreator(UserMapper.toUserResponse(task.getCreator()));
-        taskDTO.setAssignee(task.getAssignee() != null ? UserMapper.toUserResponse(task.getAssignee()) : null);
+        taskDTO.setCreator(UserMapper.toUserResponseTask(task.getCreator()));
+        taskDTO.setAssignee(task.getAssignee() != null ? UserMapper.toUserResponseTask(task.getAssignee()) : null);
         taskDTO.setBoardId(task.getBoard().getId());
         taskDTO.setComments(task.getComments() != null ? CommentMapper.toCommentResponseList(task.getComments()) : null);
         taskDTO.setCreatedAt(task.getCreatedAt());
