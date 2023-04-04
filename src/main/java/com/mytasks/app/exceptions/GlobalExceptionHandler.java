@@ -1,12 +1,14 @@
 package com.mytasks.app.exceptions;
 
+import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,11 +54,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorObject, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<String> handleSignatureException(SignatureException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorObject> handleBadCredentialsException(BadCredentialsException ex) {
+        ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
+    }
+
     private static ErrorObject getErrorObject(String message, int statusCode) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setStatusCode(statusCode);
         errorObject.setMessage(message);
-        errorObject.setTimestamp(new Date());
+        errorObject.setTimestamp(LocalDateTime.now());
         return errorObject;
     }
 

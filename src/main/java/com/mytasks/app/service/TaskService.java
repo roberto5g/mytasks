@@ -43,12 +43,12 @@ public class TaskService {
     }
     public TaskResponse createTask(TaskRequest taskRequest) {
         User creator = userRepository.findById(taskRequest.getCreator()).orElseThrow(
-                () -> new UserNotFoundException(taskRequest.getCreator())
+                () -> new UserNotFoundException("User not found with id: "+taskRequest.getCreator())
         );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
             assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
-                    () -> new UserNotFoundException(taskRequest.getAssignee())
+                    () -> new UserNotFoundException("User not found with id: "+taskRequest.getAssignee())
             );
         }
         Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(
@@ -71,7 +71,7 @@ public class TaskService {
         User assignee = null;
         if(taskRequest.getAssignee() != null){
             assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
-                    () -> new UserNotFoundException(taskRequest.getAssignee())
+                    () -> new UserNotFoundException("User not found with id: "+taskRequest.getAssignee())
             );
         }
         Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(

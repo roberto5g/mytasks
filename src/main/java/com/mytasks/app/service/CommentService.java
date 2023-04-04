@@ -45,7 +45,7 @@ public class CommentService {
         //TODO I will change it
         Long userId = 1L;
         User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new UserNotFoundException("User not found with id: "+userId)
         );
         Comment comment = CommentMapper.toComment(commentRequest);
         comment.setTask(task);
@@ -61,7 +61,7 @@ public class CommentService {
         //TODO I will change it
         Long userId = 1L;
         User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new UserNotFoundException("User not found with id: "+userId)
         );
         if (!comment.getCreator().equals(creator)){
             throw new AccessForbiddenException("edit");
@@ -77,7 +77,7 @@ public class CommentService {
         //TODO I will change it
         Long userId = 1L;
         User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new UserNotFoundException("User not found with id: "+userId)
         );
         if (!comment.getCreator().equals(creator)){
             throw new AccessForbiddenException("delete");

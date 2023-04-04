@@ -33,7 +33,7 @@ public class BoardService {
 
     public BoardResponse createBoard(BoardRequest boardRequest){
         User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
-                () -> new UserNotFoundException(boardRequest.getOwner())
+                () -> new UserNotFoundException("User not found with id: "+boardRequest.getOwner())
         );
         Board board = BoardMapper.toEntity(boardRequest);
         board.setOwner(owner);
@@ -53,7 +53,7 @@ public class BoardService {
                 () -> new BoardNotFoundException(id)
         );
         User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
-                () -> new UserNotFoundException(boardRequest.getOwner())
+                () -> new UserNotFoundException("User not found with id: "+boardRequest.getOwner())
         );
         if (!board.getOwner().equals(owner)){
             throw new AccessForbiddenException("update");
@@ -71,7 +71,7 @@ public class BoardService {
         );
         Long userId = 1L;
         User owner = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
+                () -> new UserNotFoundException("User not found with id: "+userId)
         );
         if (!board.getOwner().equals(owner)){
             throw new AccessForbiddenException("delete");
