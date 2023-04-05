@@ -1,6 +1,5 @@
 package com.mytasks.app.secutiry;
 
-import com.mytasks.app.exceptions.CustomAuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +27,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException, CustomAuthenticationException {
+                                    FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
 
         if(StringUtils.hasText(token)) {
