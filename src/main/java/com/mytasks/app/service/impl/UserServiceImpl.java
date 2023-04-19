@@ -14,6 +14,8 @@ import com.mytasks.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -81,6 +83,25 @@ public class UserServiceImpl implements UserService {
         user.setRoles(role);
         user.setCreatedAt(LocalDateTime.now());
         return UserMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public User getUserLogged() {
+        UserResponse userResponse = getLoggedInUser();
+        return UserMapper.toEntity(userResponse);
+    }
+
+    @Override
+    public List<Role> getUserRoles() {
+        return roleService.getRolesByUserId(getLoggedInUser().getId());
+    }
+
+    private UserResponse getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(
+                () -> new UserNotFoundException("User not found with email: "+authentication.getName())
+        );
+        return UserMapper.toUserResponse(user);
     }
 
 }

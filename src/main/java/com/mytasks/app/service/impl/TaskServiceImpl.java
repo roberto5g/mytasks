@@ -2,17 +2,17 @@ package com.mytasks.app.service.impl;
 
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
-import com.mytasks.app.exceptions.BoardNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
-import com.mytasks.app.exceptions.UserNotFoundException;
+import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.mapper.TaskMapper;
-import com.mytasks.app.model.Board;
+import com.mytasks.app.mapper.UserMapper;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;
 import com.mytasks.app.repository.BoardRepository;
 import com.mytasks.app.repository.TaskRepository;
-import com.mytasks.app.repository.UserRepository;
+import com.mytasks.app.service.BoardService;
 import com.mytasks.app.service.TaskService;
+import com.mytasks.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,10 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private BoardService boardService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private BoardRepository boardRepository;
@@ -47,22 +50,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse createTask(TaskRequest taskRequest) {
-        User creator = userRepository.findById(taskRequest.getCreator()).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+taskRequest.getCreator())
-        );
+        User creator = userService.getUserLogged();
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
-                    () -> new UserNotFoundException("User not found with id: "+taskRequest.getAssignee())
-            );
+            assignee = UserMapper.toEntity(userService.getUserById(taskRequest.getAssignee()));
         }
-        Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(
-                () -> new BoardNotFoundException(taskRequest.getBoardId())
-        );
+
         Task task = TaskMapper.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
-        task.setBoard(board);
+        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
 
         task.setCreatedAt(LocalDateTime.now());
         Task createdTask = taskRepository.save(task);
@@ -76,17 +73,13 @@ public class TaskServiceImpl implements TaskService {
         );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = userRepository.findById(taskRequest.getAssignee()).orElseThrow(
-                    () -> new UserNotFoundException("User not found with id: "+taskRequest.getAssignee())
-            );
+            assignee = UserMapper.toEntity(userService.getUserById(taskRequest.getAssignee()));
         }
-        Board board = boardRepository.findById(taskRequest.getBoardId()).orElseThrow(
-                () -> new BoardNotFoundException(taskRequest.getBoardId())
-        );
+
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setAssignee(assignee);
-        task.setBoard(board);
+        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
         task.setDueDate(taskRequest.getDueDate());
         task.setUpdatedAt(LocalDateTime.now());
         Task updatedTask = taskRepository.save(task);

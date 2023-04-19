@@ -1,5 +1,6 @@
 package com.mytasks.app.secutiry;
 
+import com.mytasks.app.exceptions.AccessForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthEntryPoint authEntryPoint;
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -33,6 +35,7 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPoint)
+                .accessDeniedHandler(new AccessForbiddenException())
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -42,10 +45,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic();
+                .userDetailsService(userDetailsService);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(

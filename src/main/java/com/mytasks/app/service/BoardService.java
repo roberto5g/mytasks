@@ -11,9 +11,13 @@ public interface BoardService {
 
     List<BoardResponse> getAllBoards();
 
+    List<BoardResponse> getAllBoardsByOwner();
+
     BoardResponse createBoard(BoardRequest boardRequest);
 
-    BoardResponseDetails getBoardById(Long id);
+    BoardResponseDetails getBoardDetailsById(Long id);
+
+    BoardResponse getBoardById(Long id);
 
     BoardResponse updateBoard(Long id, BoardRequest boardRequest);
 

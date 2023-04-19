@@ -1,14 +1,16 @@
 package com.mytasks.app.exceptions;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorObject {
     private Integer statusCode;
     private String message;
-    private LocalDateTime timestamp;
+    private String timestamp;
 }

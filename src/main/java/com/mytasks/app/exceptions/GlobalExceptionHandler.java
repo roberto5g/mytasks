@@ -1,17 +1,24 @@
 package com.mytasks.app.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(AccessForbiddenException.class)
     public ResponseEntity<ErrorObject> handleEntityNotFoundException(AccessForbiddenException ex, WebRequest request) {
         ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.FORBIDDEN.value());
@@ -54,11 +61,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorObject, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<String> handleSignatureException(SignatureException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorObject> handleBadCredentialsException(BadCredentialsException ex) {
         ErrorObject errorObject = getErrorObject(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
@@ -69,7 +71,8 @@ public class GlobalExceptionHandler {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setStatusCode(statusCode);
         errorObject.setMessage(message);
-        errorObject.setTimestamp(LocalDateTime.now());
+        errorObject.setTimestamp(DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss", Locale.ENGLISH)
+                .format(LocalDateTime.now()));
         return errorObject;
     }
 

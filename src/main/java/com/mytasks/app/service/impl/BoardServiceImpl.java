@@ -5,13 +5,12 @@ import com.mytasks.app.dto.BoardResponse;
 import com.mytasks.app.dto.BoardResponseDetails;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
-import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.model.User;
 import com.mytasks.app.repository.BoardRepository;
-import com.mytasks.app.repository.UserRepository;
 import com.mytasks.app.service.BoardService;
+import com.mytasks.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,27 +24,38 @@ public class BoardServiceImpl implements BoardService {
     private BoardRepository boardRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
 
     @Override
     public List<BoardResponse> getAllBoards(){
-        List<Board> boards = boardRepository.findAll();
-        return BoardMapper.toBoardResponseList(boards);
+        return BoardMapper.toBoardResponseList(boardRepository.findAll());
+    }
+
+    @Override
+    public List<BoardResponse> getAllBoardsByOwner() {
+        return BoardMapper.toBoardResponseList(boardRepository.findByOwnerId(userService.getUserLogged().getId()));
     }
 
     @Override
     public BoardResponse createBoard(BoardRequest boardRequest){
-        User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+boardRequest.getOwner())
-        );
-        Board board = BoardMapper.toEntity(boardRequest);
+        User owner = userService.getUserLogged();
+        Board board = BoardMapper.BoardRequestToBoard(boardRequest);
         board.setOwner(owner);
         board.setCreatedAt(LocalDateTime.now());
         return BoardMapper.toBoardResponse(boardRepository.save(board));
     }
 
     @Override
-    public BoardResponseDetails getBoardById(Long id){
+    public BoardResponse getBoardById(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new BoardNotFoundException(id)
+        );
+        return BoardMapper.toBoardResponse(board);
+    }
+
+    @Override
+    public BoardResponseDetails getBoardDetailsById(Long id){
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
@@ -57,9 +67,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        User owner = userRepository.findById(boardRequest.getOwner()).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+boardRequest.getOwner())
-        );
+        User owner = userService.getUserLogged();
         if (!board.getOwner().equals(owner)){
             throw new AccessForbiddenException("update");
         }
@@ -71,14 +79,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deleteBoard(Long boardId){
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new BoardNotFoundException(boardId)
+    public void deleteBoard(Long id){
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new BoardNotFoundException(id)
         );
-        Long userId = 1L;
-        User owner = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+userId)
-        );
+        User owner = userService.getUserLogged();
         if (!board.getOwner().equals(owner)){
             throw new AccessForbiddenException("delete");
         }

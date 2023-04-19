@@ -15,7 +15,6 @@ public class TaskRequest {
     private String title;
     private String description;
     private Date dueDate;
-    private Long creator;
     private Long assignee;
     private Long boardId;
 }

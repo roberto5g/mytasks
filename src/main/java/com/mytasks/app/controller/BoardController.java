@@ -6,6 +6,7 @@ import com.mytasks.app.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +18,16 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public List<BoardResponse> getAllBoards(){
         return boardService.getAllBoards();
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @GetMapping("/owner")
+    public List<BoardResponse> getBoardsByOwner(){
+        return boardService.getAllBoardsByOwner();
     }
 
     @PostMapping
@@ -29,7 +37,7 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public BoardResponse getBoardById(@PathVariable Long id){
-        return boardService.getBoardById(id);
+        return boardService.getBoardDetailsById(id);
     }
 
     @PutMapping("/{id}")
@@ -37,9 +45,10 @@ public class BoardController {
         return boardService.updateBoard(id, boardRequest);
     }
 
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId){
-        boardService.deleteBoard(boardId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id){
+        boardService.deleteBoard(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }

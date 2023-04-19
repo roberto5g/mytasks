@@ -10,14 +10,6 @@ import java.util.stream.Collectors;
 
 public class BoardMapper {
 
-    public static BoardRequest toBoardRequest(Board board) {
-        BoardRequest boardDTO = new BoardRequest();
-        boardDTO.setTitle(board.getTitle());
-        boardDTO.setDescription(board.getDescription());
-        boardDTO.setOwner(boardDTO.getOwner());
-        return boardDTO;
-    }
-
     public static BoardResponse toBoardResponse(Board board) {
         BoardResponse boardResponse = new BoardResponse();
         boardResponse.setId(board.getId());
@@ -41,10 +33,16 @@ public class BoardMapper {
         return boardDetails;
     }
 
-    public static Board toEntity(BoardRequest boardDTO) {
+    public static Board BoardRequestToBoard(BoardRequest boardRequest) {
         Board board = new Board();
-        board.setTitle(boardDTO.getTitle());
-        board.setDescription(boardDTO.getDescription());
+        board.setTitle(boardRequest.getTitle());
+        board.setDescription(boardRequest.getDescription());
+        return board;
+    }
+
+    public static Board BoardResponseToBoardId(BoardResponse boardResponse) {
+        Board board = new Board();
+        board.setId(boardResponse.getId());
         return board;
     }
 

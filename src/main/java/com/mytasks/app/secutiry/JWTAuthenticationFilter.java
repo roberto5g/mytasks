@@ -1,5 +1,7 @@
 package com.mytasks.app.secutiry;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,13 +33,22 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = getJWTFromRequest(request);
 
         if(StringUtils.hasText(token)) {
-            String username = tokenGenerator.getUsernameFromJWT(token);
+            try {
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-                    userDetails.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                String username = tokenGenerator.getUsernameFromJWT(token);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+                        userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            } catch (ExpiredJwtException e) {
+                System.out.println(e.getMessage());
+                request.setAttribute("expired", e.getMessage());
+            } catch (SignatureException e){
+                System.out.println(e.getMessage());
+                request.setAttribute("invalid_token", e.getMessage());
+            }
         }
         filterChain.doFilter(request, response);
 
@@ -46,7 +57,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+            return bearerToken.substring(7);
         }
         return null;
     }
