@@ -1,6 +1,7 @@
 package com.mytasks.app.secutiry;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,10 +44,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             } catch (ExpiredJwtException e) {
-                System.out.println(e.getMessage());
                 request.setAttribute("expired", e.getMessage());
-            } catch (SignatureException e){
-                System.out.println(e.getMessage());
+            } catch (SignatureException | MalformedJwtException e){
                 request.setAttribute("invalid_token", e.getMessage());
             }
         }

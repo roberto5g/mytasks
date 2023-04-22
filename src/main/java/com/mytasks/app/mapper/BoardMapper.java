@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 public class BoardMapper {
 
     public static BoardResponse toBoardResponse(Board board) {
+        if(board == null) {
+            return null;
+        }
         BoardResponse boardResponse = new BoardResponse();
         boardResponse.setId(board.getId());
         boardResponse.setTitle(board.getTitle());
@@ -27,7 +30,9 @@ public class BoardMapper {
         boardDetails.setTitle(board.getTitle());
         boardDetails.setDescription(board.getDescription());
         boardDetails.setOwner(UserMapper.toUserResponseTask(board.getOwner()));
-        boardDetails.setTasks(TaskMapper.toDTOList(board.getTasks()));
+        if (board.getTasks() != null) {
+            boardDetails.setTasks(TaskMapper.toDTOList(board.getTasks()));
+        }
         boardDetails.setCreatedAt(board.getCreatedAt());
         boardDetails.setUpdatedAt(board.getUpdatedAt());
         return boardDetails;

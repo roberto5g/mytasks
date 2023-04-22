@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -94,6 +95,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Role> getUserRoles() {
         return roleService.getRolesByUserId(getLoggedInUser().getId());
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return getUserRoles().stream().anyMatch(role -> Objects.equals(role.getName(),"ADMIN"));
     }
 
     private UserResponse getLoggedInUser() {

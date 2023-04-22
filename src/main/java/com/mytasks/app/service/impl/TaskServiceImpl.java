@@ -2,6 +2,7 @@ package com.mytasks.app.service.impl;
 
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
+import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.mapper.TaskMapper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -67,9 +69,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
-        Task task = taskRepository.findById(taskId).orElseThrow(
-                () -> new TaskNotFoundException(taskId)
+    public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(id)
         );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
@@ -87,10 +89,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(
-                () -> new TaskNotFoundException(taskId)
+    public void deleteTask(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(id)
         );
+
+        if (!Objects.equals(task.getCreator().getId(), userService.getUserLogged().getId()) && !userService.isAdmin()){
+            throw new AccessForbiddenException("delete");
+        }
+
         taskRepository.delete(task);
     }
 

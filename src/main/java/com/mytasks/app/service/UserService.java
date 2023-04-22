@@ -25,4 +25,6 @@ public interface UserService {
 
     List<Role> getUserRoles();
 
+    boolean isAdmin();
+
 }

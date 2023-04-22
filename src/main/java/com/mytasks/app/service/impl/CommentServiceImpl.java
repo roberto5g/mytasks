@@ -5,20 +5,19 @@ import com.mytasks.app.dto.CommentResponse;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.CommentNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
-import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.mapper.CommentMapper;
 import com.mytasks.app.model.Comment;
 import com.mytasks.app.model.Task;
-import com.mytasks.app.model.User;
 import com.mytasks.app.repository.CommentRepository;
 import com.mytasks.app.repository.TaskRepository;
-import com.mytasks.app.repository.UserRepository;
 import com.mytasks.app.service.CommentService;
+import com.mytasks.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,14 +28,16 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
-    public List<CommentResponse> getCommentsByTask(Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(
-                () -> new TaskNotFoundException(taskId)
+    public List<CommentResponse> getCommentsByTask(Long id){
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(id)
         );
+
         List<Comment> comments = commentRepository.findByTaskId(task.getId());
+
         return comments.stream().map(CommentMapper::toCommentResponse).collect(Collectors.toList());
     }
 
@@ -45,48 +46,40 @@ public class CommentServiceImpl implements CommentService {
         Task task = taskRepository.findById(commentRequest.getTaskId()).orElseThrow(
                 () -> new TaskNotFoundException(commentRequest.getTaskId())
         );
-        //TODO I will change it
-        Long userId = 1L;
-        User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+userId)
-        );
+
         Comment comment = CommentMapper.toComment(commentRequest);
         comment.setTask(task);
-        comment.setCreator(creator);
+        comment.setCreator(userService.getUserLogged());
         comment.setCreatedAt(LocalDateTime.now());
+
         return CommentMapper.toCommentResponse(commentRepository.save(comment));
     }
 
     @Override
-    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new CommentNotFoundException(commentId)
+    public CommentResponse updateComment(Long id, CommentRequest commentRequest) {
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new CommentNotFoundException(id)
         );
-        //TODO I will change it
-        Long userId = 1L;
-        User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+userId)
-        );
-        if (!comment.getCreator().equals(creator)){
+
+        if (!Objects.equals(comment.getCreator().getId(), userService.getUserLogged().getId())){
             throw new AccessForbiddenException("edit");
         }
+
         comment.setDescription(commentRequest.getDescription());
         comment.setUpdatedAt(LocalDateTime.now());
+
         return CommentMapper.toCommentResponse(commentRepository.save(comment));
     }
 
     @Override
-    public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(commentId));
-        //TODO I will change it
-        Long userId = 1L;
-        User creator = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User not found with id: "+userId)
-        );
-        if (!comment.getCreator().equals(creator)){
+    public void deleteComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new CommentNotFoundException(id));
+
+        if (!Objects.equals(comment.getCreator().getId(), userService.getUserLogged().getId()) && !userService.isAdmin()){
             throw new AccessForbiddenException("delete");
         }
+
         commentRepository.delete(comment);
     }
 }

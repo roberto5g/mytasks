@@ -7,7 +7,6 @@ import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.model.Board;
-import com.mytasks.app.model.User;
 import com.mytasks.app.repository.BoardRepository;
 import com.mytasks.app.service.BoardService;
 import com.mytasks.app.service.UserService;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -39,10 +39,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardResponse createBoard(BoardRequest boardRequest){
-        User owner = userService.getUserLogged();
         Board board = BoardMapper.BoardRequestToBoard(boardRequest);
-        board.setOwner(owner);
+        board.setOwner(userService.getUserLogged());
         board.setCreatedAt(LocalDateTime.now());
+
         return BoardMapper.toBoardResponse(boardRepository.save(board));
     }
 
@@ -67,15 +67,18 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        User owner = userService.getUserLogged();
-        if (!board.getOwner().equals(owner)){
+
+        if (!Objects.equals(board.getOwner().getId(), userService.getUserLogged().getId()) && !userService.isAdmin()){
             throw new AccessForbiddenException("update");
         }
+
         board.setTitle(boardRequest.getTitle());
         board.setDescription(boardRequest.getDescription());
-        board.setOwner(owner);
+        board.setOwner(userService.getUserLogged());
         board.setUpdatedAt(LocalDateTime.now());
+
         return BoardMapper.toBoardResponse(boardRepository.save(board));
+
     }
 
     @Override
@@ -83,10 +86,11 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        User owner = userService.getUserLogged();
-        if (!board.getOwner().equals(owner)){
+
+        if (!Objects.equals(board.getOwner().getId(), userService.getUserLogged().getId()) && !userService.isAdmin()){
             throw new AccessForbiddenException("delete");
         }
+
         boardRepository.delete(board);
     }
 

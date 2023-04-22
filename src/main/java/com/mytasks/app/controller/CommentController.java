@@ -6,6 +6,7 @@ import com.mytasks.app.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +18,9 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @GetMapping("/task/{taskId}")
-    public ResponseEntity<List<CommentResponse>> getCommentsByTask(@PathVariable Long taskId){
-        List<CommentResponse> comments = commentService.getCommentsByTask(taskId);
+    @GetMapping("/task/{id}")
+    public ResponseEntity<List<CommentResponse>> getCommentsByTask(@PathVariable Long id){
+        List<CommentResponse> comments = commentService.getCommentsByTask(id);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
@@ -29,15 +30,16 @@ public class CommentController {
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{commentId}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest){
-        CommentResponse updateComment = commentService.updateComment(commentId, commentRequest);
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, @RequestBody CommentRequest commentRequest){
+        CommentResponse updateComment = commentService.updateComment(id, commentRequest);
         return new ResponseEntity<>(updateComment, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId){
-        commentService.deleteComment(commentId);
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id){
+        commentService.deleteComment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
