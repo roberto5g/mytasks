@@ -24,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -118,6 +117,18 @@ class BoardServiceImplTest {
         assertEquals(expectedBoard.getDescription(), response.getDescription());
         assertEquals(expectedBoard.getOwner().getId(), response.getOwner().getId());
         assertEquals(expectedBoard.getCreatedAt(), response.getCreatedAt());
+    }
+
+    @Test
+    void testGetBoardByIdShouldThrowBoardNotFoundException() {
+        when(boardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        try {
+            boardService.getBoardById(1L);
+        } catch (BoardNotFoundException ex) {
+            verify(boardRepository, times(1)).findById(1L);
+            assertEquals("Board not found with id: " + 1L, ex.getMessage());
+        }
     }
 
     @Test
@@ -256,4 +267,5 @@ class BoardServiceImplTest {
         }
 
     }
+
 }
