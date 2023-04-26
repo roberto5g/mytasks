@@ -1,5 +1,6 @@
 package com.mytasks.app;
 
+import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;

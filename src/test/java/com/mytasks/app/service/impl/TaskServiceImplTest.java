@@ -121,7 +121,37 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void updateTask() {
+    void testUpdateTask() {
+        User expectedUser = TestUserFactory.createTestUser();
+        Board expectedBoard = TestBoardFactory.createTestBoard(expectedUser);
+        Task expectedTask = TestTaskFactory.createTestTask(expectedBoard, expectedUser);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2023, Calendar.APRIL, 23, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date dueDateTask = calendar.getTime();
+
+        TaskRequest taskRequest = new TaskRequest();
+        taskRequest.setBoardId(expectedBoard.getId());
+        taskRequest.setAssignee(expectedUser.getId());
+        taskRequest.setTitle("task title2");
+        taskRequest.setDescription("task description2");
+        taskRequest.setDueDate(dueDateTask);
+
+        when(userService.getUserById(taskRequest.getAssignee())).thenReturn(UserMapper.toUserResponse(expectedUser));
+        when(taskRepository.findById(expectedTask.getId())).thenReturn(Optional.of(expectedTask));
+        when(taskRepository.save(expectedTask)).thenReturn(expectedTask);
+        when(boardService.getBoardById(taskRequest.getBoardId())).thenReturn(BoardMapper.toBoardResponse(expectedTask.getBoard()));
+
+        TaskResponse updatedTaskResponse = taskService.updateTask(expectedTask.getId(), taskRequest);
+
+        assertNotNull(updatedTaskResponse);
+        assertEquals(expectedTask.getId(), updatedTaskResponse.getId());
+        assertEquals(taskRequest.getTitle(), updatedTaskResponse.getTitle());
+        assertEquals(taskRequest.getDescription(), updatedTaskResponse.getDescription());
+        assertEquals(taskRequest.getAssignee(), updatedTaskResponse.getAssignee().getId());
+        assertEquals(taskRequest.getBoardId(), updatedTaskResponse.getBoardId());
+        assertEquals(taskRequest.getDueDate(), updatedTaskResponse.getDueDate());
     }
 
     @Test
