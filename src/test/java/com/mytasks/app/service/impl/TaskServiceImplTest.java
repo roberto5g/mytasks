@@ -3,8 +3,11 @@ package com.mytasks.app.service.impl;
 import com.mytasks.app.TestBoardFactory;
 import com.mytasks.app.TestTaskFactory;
 import com.mytasks.app.TestUserFactory;
+import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
+import com.mytasks.app.exceptions.BoardNotFoundException;
+import com.mytasks.app.exceptions.TaskNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.mapper.UserMapper;
 import com.mytasks.app.model.Board;
@@ -84,6 +87,46 @@ class TaskServiceImplTest {
         assertEquals(expectedTask.getCreator().getName(), response.getCreator().getName());
         assertEquals(expectedTask.getCreatedAt(), response.getCreatedAt());
 
+    }
+
+    @Test
+    void testGetTaskByIdShouldThrowTaskNotFoundException() {
+        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+
+        try {
+            taskService.getTaskById(1L);
+        } catch (TaskNotFoundException ex) {
+            verify(taskRepository, times(1)).findById(1L);
+            assertEquals("Task not found with id: " + 1L, ex.getMessage());
+        }
+    }
+
+    @Test
+    void testUpdateTaskShouldThrowTaskNotFoundException() {
+        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+        String newTitle = "New Task Title";
+        String newDescription = "New Task Description";
+        TaskRequest taskRequest = new TaskRequest();
+        taskRequest.setTitle(newTitle);
+        taskRequest.setDescription(newDescription);
+        try {
+            taskService.updateTask(1L, taskRequest);
+        } catch (TaskNotFoundException ex) {
+            verify(taskRepository, times(1)).findById(1L);
+            assertEquals("Task not found with id: " + 1L, ex.getMessage());
+        }
+    }
+
+    @Test
+    void testDeleteTaskByIdShouldThrowTaskNotFoundException() {
+        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+
+        try {
+            taskService.deleteTask(1L);
+        } catch (TaskNotFoundException ex) {
+            verify(taskRepository, times(1)).findById(1L);
+            assertEquals("Task not found with id: " + 1L, ex.getMessage());
+        }
     }
 
     @Test
