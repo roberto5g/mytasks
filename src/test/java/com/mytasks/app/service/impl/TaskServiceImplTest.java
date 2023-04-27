@@ -155,6 +155,17 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void deleteTask() {
+    void testDeleteTask() {
+        User expectedUser = TestUserFactory.createTestUser();
+        Board expectedBoard = TestBoardFactory.createTestBoard(expectedUser);
+        Task expectedTask = TestTaskFactory.createTestTask(expectedBoard, expectedUser);
+
+        Long taskId = 1L;
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(expectedTask));
+        when(userService.getUserLogged()).thenReturn(expectedUser);
+
+        taskService.deleteTask(taskId);
+
+        verify(taskRepository).delete(expectedTask);
     }
 }
