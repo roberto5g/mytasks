@@ -12,7 +12,10 @@ INSERT INTO tasks (created_at, description, status, due_date, title, updated_at,
     (now(), 'task 1', 0, '2023-10-10','Title task 1',now(),2,1,1),
     (now(), 'task 2', 1,'2023-10-10','Title task 2',now(),1,1,2),
     (now(), 'task 3', 2,'2023-10-10','Title task 3',now(),1,2,2),
-    (now(), 'task 4', 3,'2023-10-10','Title task 4',now(),1,2,2);
+    (now(), 'task 4', 3,'2023-10-10','Title task 4',now(),1,2,2),
+    (now(), 'task 5', 3,'2023-10-10','Title task 5',now(),1,2,2),
+    (now(), 'task 6', 3,'2023-10-10','Title task 6',now(),1,2,2),
+    (now(), 'task 7', 3,'2023-10-10','Title task 7',now(),1,2,2);
 
 INSERT INTO comments (description, user_id, task_id, created_at)
     VALUES

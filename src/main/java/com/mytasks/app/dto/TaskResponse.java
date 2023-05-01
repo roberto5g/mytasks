@@ -1,5 +1,6 @@
 package com.mytasks.app.dto;
 
+import com.mytasks.app.model.StatusTask;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class TaskResponse {
     private Date dueDate;
     private UserResponseTask creator;
     private UserResponseTask assignee;
+    private StatusTask statusTask;
     private Long boardId;
     private List<CommentResponse> comments;
     private LocalDateTime createdAt;
