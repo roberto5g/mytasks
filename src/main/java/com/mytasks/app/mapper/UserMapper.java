@@ -8,9 +8,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class UserMapper {
+
+    private UserMapper(){}
 
     public static UserResponse toUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
@@ -33,7 +34,7 @@ public class UserMapper {
                         .createdAt(user.getCreatedAt())
                         .updatedAt(user.getUpdatedAt())
                         .build()
-        ).collect(Collectors.toList());
+        ).toList();
         return new PageImpl<>(userResponse, pageable, userPage.getTotalElements());
     }
 

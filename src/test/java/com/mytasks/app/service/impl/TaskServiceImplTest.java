@@ -6,6 +6,7 @@ import com.mytasks.app.TestUserFactory;
 import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
+import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
 import com.mytasks.app.mapper.BoardMapper;
@@ -197,6 +198,8 @@ class TaskServiceImplTest {
         assertEquals(taskRequest.getDueDate(), updatedTaskResponse.getDueDate());
     }
 
+
+
     @Test
     void testDeleteTask() {
         User expectedUser = TestUserFactory.createTestUser();
@@ -210,5 +213,24 @@ class TaskServiceImplTest {
         taskService.deleteTask(taskId);
 
         verify(taskRepository).delete(expectedTask);
+    }
+
+    @Test
+    void testDeleteTaskAccessForbidden() {
+        User expectedUser = TestUserFactory.createTestUser();
+        User expectedOtherUser = TestUserFactory.createOtherTestUser();
+        Board expectedBoard = TestBoardFactory.createTestBoard(expectedUser);
+        Task expectedTask = TestTaskFactory.createTestTask(expectedBoard, expectedUser);
+
+        Long taskId = 1L;
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(expectedTask));
+        when(userService.getUserLogged()).thenReturn(expectedOtherUser);
+        try{
+            taskService.deleteTask(taskId);
+        } catch (AccessForbiddenException ex){
+            verify(taskRepository, times(1)).findById(1L);
+            assertEquals("You don't have permission to delete this resource.", ex.getMessage());
+        }
+
     }
 }

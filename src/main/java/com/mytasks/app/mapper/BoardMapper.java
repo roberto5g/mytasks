@@ -6,9 +6,10 @@ import com.mytasks.app.dto.BoardResponseDetails;
 import com.mytasks.app.model.Board;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BoardMapper {
+
+    private BoardMapper(){}
 
     public static BoardResponse toBoardResponse(Board board) {
         if(board == null) {
@@ -38,21 +39,21 @@ public class BoardMapper {
         return boardDetails;
     }
 
-    public static Board BoardRequestToBoard(BoardRequest boardRequest) {
+    public static Board boardRequestToBoard(BoardRequest boardRequest) {
         Board board = new Board();
         board.setTitle(boardRequest.getTitle());
         board.setDescription(boardRequest.getDescription());
         return board;
     }
 
-    public static Board BoardResponseToBoardId(BoardResponse boardResponse) {
+    public static Board boardResponseToBoardId(BoardResponse boardResponse) {
         Board board = new Board();
         board.setId(boardResponse.getId());
         return board;
     }
 
     public static List<BoardResponse> toBoardResponseList(List<Board> boards) {
-        return boards.stream().map(BoardMapper::toBoardResponse).collect(Collectors.toList());
+        return boards.stream().map(BoardMapper::toBoardResponse).toList();
     }
 }
 

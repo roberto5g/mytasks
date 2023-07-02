@@ -61,7 +61,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = TaskMapper.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
-        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
+        task.setBoard(BoardMapper.boardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
 
         task.setCreatedAt(LocalDateTime.now());
         Task createdTask = taskRepository.save(task);
@@ -81,7 +81,7 @@ public class TaskServiceImpl implements TaskService {
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setAssignee(assignee);
-        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
+        task.setBoard(BoardMapper.boardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
         task.setDueDate(taskRequest.getDueDate());
         task.setUpdatedAt(LocalDateTime.now());
         Task updatedTask = taskRepository.save(task);

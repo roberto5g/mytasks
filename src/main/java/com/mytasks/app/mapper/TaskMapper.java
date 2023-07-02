@@ -5,9 +5,10 @@ import com.mytasks.app.dto.TaskResponse;
 import com.mytasks.app.model.Task;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TaskMapper {
+
+    private TaskMapper(){}
 
     public static TaskResponse toTaskResponse(Task task) {
         TaskResponse taskDTO = new TaskResponse();
@@ -34,7 +35,7 @@ public class TaskMapper {
     }
 
     public static List<TaskResponse> toDTOList(List<Task> tasks) {
-        return tasks.stream().map(TaskMapper::toTaskResponse).collect(Collectors.toList());
+        return tasks.stream().map(TaskMapper::toTaskResponse).toList();
     }
 
 }

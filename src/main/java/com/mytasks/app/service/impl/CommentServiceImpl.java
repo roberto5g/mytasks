@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -38,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
 
         List<Comment> comments = commentRepository.findByTaskId(task.getId());
 
-        return comments.stream().map(CommentMapper::toCommentResponse).collect(Collectors.toList());
+        return comments.stream().map(CommentMapper::toCommentResponse).toList();
     }
 
     @Override

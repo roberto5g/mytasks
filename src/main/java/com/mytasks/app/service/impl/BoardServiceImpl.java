@@ -39,7 +39,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardResponse createBoard(BoardRequest boardRequest){
-        Board board = BoardMapper.BoardRequestToBoard(boardRequest);
+        Board board = BoardMapper.boardRequestToBoard(boardRequest);
         board.setOwner(userService.getUserLogged());
         board.setCreatedAt(LocalDateTime.now());
 
