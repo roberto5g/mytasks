@@ -3,18 +3,14 @@ package com.mytasks.app.service.impl;
 import com.mytasks.app.TestBoardFactory;
 import com.mytasks.app.TestTaskFactory;
 import com.mytasks.app.TestUserFactory;
-import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
 import com.mytasks.app.exceptions.AccessForbiddenException;
-import com.mytasks.app.exceptions.BoardNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
-import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.mapper.UserMapper;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;
-import com.mytasks.app.repository.BoardRepository;
 import com.mytasks.app.repository.TaskRepository;
 import com.mytasks.app.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,9 +21,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.mytasks.app.mapper.BoardMapper.boardMapperInstance;
+import static com.mytasks.app.mapper.UserMapper.userMapperInstance;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -149,9 +146,9 @@ class TaskServiceImplTest {
         taskRequest.setDueDate(dueDateTask);
 
         when(userService.getUserLogged()).thenReturn(expectedUser);
-        when(userService.getUserById(any())).thenReturn(UserMapper.toUserResponse(expectedUser));
+        when(userService.getUserById(any())).thenReturn(userMapperInstance.toUserResponse(expectedUser));
         when(taskRepository.save(any())).thenReturn(expectedTask);
-        when(boardService.getBoardById(anyLong())).thenReturn(BoardMapper.toBoardResponse(expectedTask.getBoard()));
+        when(boardService.getBoardById(anyLong())).thenReturn(boardMapperInstance.toBoardResponse(expectedTask.getBoard()));
 
         TaskResponse taskResponse = taskService.createTask(taskRequest);
 
@@ -182,10 +179,10 @@ class TaskServiceImplTest {
         taskRequest.setDescription("task description2");
         taskRequest.setDueDate(dueDateTask);
 
-        when(userService.getUserById(taskRequest.getAssignee())).thenReturn(UserMapper.toUserResponse(expectedUser));
+        when(userService.getUserById(taskRequest.getAssignee())).thenReturn(userMapperInstance.toUserResponse(expectedUser));
         when(taskRepository.findById(expectedTask.getId())).thenReturn(Optional.of(expectedTask));
         when(taskRepository.save(expectedTask)).thenReturn(expectedTask);
-        when(boardService.getBoardById(taskRequest.getBoardId())).thenReturn(BoardMapper.toBoardResponse(expectedTask.getBoard()));
+        when(boardService.getBoardById(taskRequest.getBoardId())).thenReturn(boardMapperInstance.toBoardResponse(expectedTask.getBoard()));
 
         TaskResponse updatedTaskResponse = taskService.updateTask(expectedTask.getId(), taskRequest);
 

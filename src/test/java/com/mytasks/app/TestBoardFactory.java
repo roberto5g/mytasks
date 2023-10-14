@@ -7,6 +7,7 @@ import com.mytasks.app.model.Board;
 import com.mytasks.app.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class TestBoardFactory {
     public static Board createTestBoard(User owner) {
@@ -16,6 +17,7 @@ public class TestBoardFactory {
         board.setDescription("board1");
         board.setOwner(owner);
         board.setCreatedAt(LocalDateTime.now());
+        board.setTasks(new ArrayList<>());
         return board;
     }
 
