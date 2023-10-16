@@ -5,7 +5,6 @@ import com.mytasks.app.dto.CommentResponse;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.CommentNotFoundException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
-import com.mytasks.app.mapper.CommentMapper;
 import com.mytasks.app.model.Comment;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.repository.CommentRepository;
@@ -18,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static com.mytasks.app.mapper.CommentMapper.commentMapperInstance;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -37,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
 
         List<Comment> comments = commentRepository.findByTaskId(task.getId());
 
-        return comments.stream().map(CommentMapper::toCommentResponse).toList();
+        return comments.stream().map(commentMapperInstance::toCommentResponse).toList();
     }
 
     @Override
@@ -46,12 +47,12 @@ public class CommentServiceImpl implements CommentService {
                 () -> new TaskNotFoundException(commentRequest.getTaskId())
         );
 
-        Comment comment = CommentMapper.toComment(commentRequest);
+        Comment comment = commentMapperInstance.toComment(commentRequest);
         comment.setTask(task);
         comment.setCreator(userService.getUserLogged());
         comment.setCreatedAt(LocalDateTime.now());
 
-        return CommentMapper.toCommentResponse(commentRepository.save(comment));
+        return commentMapperInstance.toCommentResponse(commentRepository.save(comment));
     }
 
     @Override
@@ -67,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setDescription(commentRequest.getDescription());
         comment.setUpdatedAt(LocalDateTime.now());
 
-        return CommentMapper.toCommentResponse(commentRepository.save(comment));
+        return commentMapperInstance.toCommentResponse(commentRepository.save(comment));
     }
 
     @Override

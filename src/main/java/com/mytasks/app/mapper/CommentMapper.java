@@ -3,31 +3,35 @@ package com.mytasks.app.mapper;
 import com.mytasks.app.dto.CommentRequest;
 import com.mytasks.app.dto.CommentResponse;
 import com.mytasks.app.model.Comment;
+import com.mytasks.app.model.Task;
+import com.mytasks.app.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CommentMapper {
+@Mapper
+public interface CommentMapper {
 
-    private CommentMapper(){}
+    CommentMapper commentMapperInstance = Mappers.getMapper(CommentMapper.class);
 
-    public static CommentResponse toCommentResponse(Comment comment) {
-        CommentResponse commentResponse = new CommentResponse();
-        commentResponse.setId(comment.getId());
-        commentResponse.setDescription(comment.getDescription());
-        commentResponse.setCreator(comment.getCreator().getName());
-        commentResponse.setTask(comment.getTask().getId());
-        commentResponse.setCreatedAt(comment.getCreatedAt());
-        return commentResponse;
+    CommentResponse toCommentResponse(Comment comment);
+
+    default Long map(Task task) {
+        return task != null ? task.getId() : null;
     }
 
-    public static List<CommentResponse> toCommentResponseList(List<Comment> comments) {
-        return comments.stream().map(CommentMapper::toCommentResponse).toList();
+    default String map(User user) {
+        return user != null ? user.getName() : null;
     }
 
+    Comment toComment(CommentRequest commentRequest);
 
-    public static Comment toComment(CommentRequest commentRequest) {
-        Comment comment = new Comment();
-        comment.setDescription(commentRequest.getDescription());
-        return comment;
+    default List<CommentResponse> toCommentResponseList(List<Comment> comments) {
+        List<CommentResponse> list = new ArrayList<>();
+        comments.forEach(d->list.add(toCommentResponse(d)));
+        return list;
     }
+
 }
