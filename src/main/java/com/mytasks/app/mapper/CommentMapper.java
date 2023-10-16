@@ -5,63 +5,33 @@ import com.mytasks.app.dto.CommentResponse;
 import com.mytasks.app.model.Comment;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class CommentMapper {
+@Mapper
+public interface CommentMapper {
 
-    public static CommentResponse toCommentResponse(Comment comment) {
-        CommentResponse commentResponse = new CommentResponse();
-        commentResponse.setId(comment.getId());
-        commentResponse.setDescription(comment.getDescription());
-        commentResponse.setCreator(comment.getCreator().getName());
-        commentResponse.setTask(comment.getTask().getId());
-        commentResponse.setCreatedAt(comment.getCreatedAt());
-        return commentResponse;
+    CommentMapper commentMapperInstance = Mappers.getMapper(CommentMapper.class);
+
+    CommentResponse toCommentResponse(Comment comment);
+
+    default Long map(Task task) {
+        return task != null ? task.getId() : null;
     }
 
-    /*public static List<Comment> toCommentList(List<CommentRequest> commentDTOList) {
-        return commentDTOList.stream().map(
-                commentDTO -> {
-                    Comment comment = new Comment();
-                    comment.setId(commentDTO.getId());
-                    comment.setDescription(commentDTO.getDescription());
-                    comment.setCreatedAt(commentDTO.getCreatedAt());
-                    User creator = new User();
-                    creator.setId(commentDTO.getCreator().getId());
-                    comment.setCreator(creator);
-                    Task task = new Task();
-                    task.setId(commentDTO.getTaskId());
-                    comment.setTask(task);
-                    return comment;
-                }).collect(Collectors.toList());
-    }
-     */
-
-    /*public static Comment toComment(CommentRequest commentRequest) {
-        Comment comment = new Comment();
-        comment.setId(commentRequest.getId());
-        comment.setDescription(commentDTO.getDescription());
-        comment.setCreatedAt(commentDTO.getCreatedAt());
-        User creator = new User();
-        creator.setId(commentDTO.getCreator().getId());
-        comment.setCreator(creator);
-        Task task = new Task();
-        task.setId(commentDTO.getTaskId());
-        comment.setTask(task);
-        return comment;
-    }
-     */
-
-    public static List<CommentResponse> toCommentResponseList(List<Comment> comments) {
-        return comments.stream().map(CommentMapper::toCommentResponse).collect(Collectors.toList());
+    default String map(User user) {
+        return user != null ? user.getName() : null;
     }
 
+    Comment toComment(CommentRequest commentRequest);
 
-    public static Comment toComment(CommentRequest commentRequest) {
-        Comment comment = new Comment();
-        comment.setDescription(commentRequest.getDescription());
-        return comment;
+    default List<CommentResponse> toCommentResponseList(List<Comment> comments) {
+        List<CommentResponse> list = new ArrayList<>();
+        comments.forEach(d->list.add(toCommentResponse(d)));
+        return list;
     }
+
 }

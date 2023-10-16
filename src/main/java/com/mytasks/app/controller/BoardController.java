@@ -2,6 +2,7 @@ package com.mytasks.app.controller;
 
 import com.mytasks.app.dto.BoardRequest;
 import com.mytasks.app.dto.BoardResponse;
+import com.mytasks.app.dto.BoardResponseDetails;
 import com.mytasks.app.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class BoardController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get board by id")
-    public BoardResponse getBoardById(@PathVariable Long id){
+    public BoardResponseDetails getBoardById(@PathVariable Long id){
         return boardService.getBoardDetailsById(id);
     }
 

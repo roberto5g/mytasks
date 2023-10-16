@@ -5,7 +5,6 @@ import com.mytasks.app.dto.UserResponse;
 import com.mytasks.app.exceptions.UserException;
 import com.mytasks.app.exceptions.UserNotFoundException;
 import com.mytasks.app.exceptions.UserUpdateException;
-import com.mytasks.app.mapper.UserMapper;
 import com.mytasks.app.model.Role;
 import com.mytasks.app.model.User;
 import com.mytasks.app.repository.UserRepository;
@@ -24,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.mytasks.app.mapper.UserMapper.userMapperInstance;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponse> findAll(Pageable pageable){
-        return UserMapper.toPageUserResponse(userRepository.findAll(pageable), pageable);
+        return userMapperInstance.toPageUserResponse(userRepository.findAll(pageable));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("User not found with id: "+userId)
         );
-        return UserMapper.toUserResponse(user);
+        return userMapperInstance.toUserResponse(user);
     }
 
     @Override
@@ -59,15 +60,13 @@ public class UserServiceImpl implements UserService {
                 () -> new UserNotFoundException("User not found with id: "+userId)
         );
         Optional<User> userByEmail = userRepository.findByEmail(userRequest.getEmail());
-        if (userByEmail.isPresent()){
-            if(!user.getEmail().equals(userByEmail.get().getEmail())){
-                throw new UserUpdateException("The email provided is already in use.");
-            }
+        if (userByEmail.isPresent() && !user.getEmail().equals(userByEmail.get().getEmail())){
+            throw new UserUpdateException("The email provided is already in use.");
         }
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
         user.setUpdatedAt(LocalDateTime.now());
-        return UserMapper.toUserResponse(userRepository.save(user));
+        return userMapperInstance.toUserResponse(userRepository.save(user));
     }
 
     @Override
@@ -83,13 +82,13 @@ public class UserServiceImpl implements UserService {
         role.add(roleService.getRoleDefault());
         user.setRoles(role);
         user.setCreatedAt(LocalDateTime.now());
-        return UserMapper.toUserResponse(userRepository.save(user));
+        return userMapperInstance.toUserResponse(userRepository.save(user));
     }
 
     @Override
     public User getUserLogged() {
         UserResponse userResponse = getLoggedInUser();
-        return UserMapper.toEntity(userResponse);
+        return userMapperInstance.toEntity(userResponse);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(
                 () -> new UserNotFoundException("User not found with email: "+authentication.getName())
         );
-        return UserMapper.toUserResponse(user);
+        return userMapperInstance.toUserResponse(user);
     }
 
 }

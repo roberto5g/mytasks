@@ -3,38 +3,46 @@ package com.mytasks.app.mapper;
 import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
 import com.mytasks.app.model.Task;
+import com.mytasks.app.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class TaskMapper {
+@Mapper(uses = {UserMapper.class, TaskMapper.class})
+public interface TaskMapper {
 
-    public static TaskResponse toTaskResponse(Task task) {
-        TaskResponse taskDTO = new TaskResponse();
-        taskDTO.setId(task.getId());
-        taskDTO.setTitle(task.getTitle());
-        taskDTO.setDescription(task.getDescription());
-        taskDTO.setDueDate(task.getDueDate());
-        taskDTO.setCreator(UserMapper.toUserResponseTask(task.getCreator()));
-        taskDTO.setAssignee(task.getAssignee() != null ? UserMapper.toUserResponseTask(task.getAssignee()) : null);
-        taskDTO.setBoardId(task.getBoard().getId());
-        taskDTO.setStatusTask(task.getStatus());
-        taskDTO.setComments(task.getComments() != null ? CommentMapper.toCommentResponseList(task.getComments()) : null);
-        taskDTO.setCreatedAt(task.getCreatedAt());
-        taskDTO.setUpdatedAt(task.getUpdatedAt());
-        return taskDTO;
+    TaskMapper taskMapperInstance = Mappers.getMapper(TaskMapper.class);
+
+    @Mapping(target = "boardId", source = "board.id")
+    @Mapping(target = "statusTask", source = "status")
+    TaskResponse toTaskResponse(Task task);
+
+    default User map(Long value) {
+        if (value == null) {
+            return null;
+        }
+        User user = new User();
+        user.setId(value);
+        return user;
     }
 
-    public static Task toEntity(TaskRequest taskRequest) {
-        Task task = new Task();
-        task.setTitle(taskRequest.getTitle());
-        task.setDescription(taskRequest.getDescription());
-        task.setDueDate(taskRequest.getDueDate());
-        return task;
+    default Long map(Task task) {
+        return task != null ? task.getId() : null;
     }
 
-    public static List<TaskResponse> toDTOList(List<Task> tasks) {
-        return tasks.stream().map(TaskMapper::toTaskResponse).collect(Collectors.toList());
+    default String map(User user) {
+        return user != null ? user.getName() : null;
+    }
+
+    Task toEntity(TaskRequest taskRequest);
+
+    default List<TaskResponse> toDTOList(List<Task> tasks) {
+        List<TaskResponse> list = new ArrayList<>();
+        tasks.forEach(d -> list.add(toTaskResponse(d)));
+        return list;
     }
 
 }

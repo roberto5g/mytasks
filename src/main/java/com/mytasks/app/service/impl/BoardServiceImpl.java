@@ -5,7 +5,6 @@ import com.mytasks.app.dto.BoardResponse;
 import com.mytasks.app.dto.BoardResponseDetails;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
-import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.repository.BoardRepository;
 import com.mytasks.app.service.BoardService;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static com.mytasks.app.mapper.BoardMapper.boardMapperInstance;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -29,21 +30,21 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardResponse> getAllBoards(){
-        return BoardMapper.toBoardResponseList(boardRepository.findAll());
+        return boardMapperInstance.toBoardResponseList(boardRepository.findAll());
     }
 
     @Override
     public List<BoardResponse> getAllBoardsByOwner() {
-        return BoardMapper.toBoardResponseList(boardRepository.findByOwnerId(userService.getUserLogged().getId()));
+        return boardMapperInstance.toBoardResponseList(boardRepository.findByOwnerId(userService.getUserLogged().getId()));
     }
 
     @Override
     public BoardResponse createBoard(BoardRequest boardRequest){
-        Board board = BoardMapper.BoardRequestToBoard(boardRequest);
+        Board board = boardMapperInstance.boardRequestToBoard(boardRequest);
         board.setOwner(userService.getUserLogged());
         board.setCreatedAt(LocalDateTime.now());
 
-        return BoardMapper.toBoardResponse(boardRepository.save(board));
+        return boardMapperInstance.toBoardResponse(boardRepository.save(board));
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        return BoardMapper.toBoardResponse(board);
+        return boardMapperInstance.toBoardResponse(board);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new BoardNotFoundException(id)
         );
-        return BoardMapper.toBoardResponseDetails(board);
+        return boardMapperInstance.toBoardResponseDetails(board);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class BoardServiceImpl implements BoardService {
         board.setOwner(userService.getUserLogged());
         board.setUpdatedAt(LocalDateTime.now());
 
-        return BoardMapper.toBoardResponse(boardRepository.save(board));
+        return boardMapperInstance.toBoardResponse(boardRepository.save(board));
 
     }
 

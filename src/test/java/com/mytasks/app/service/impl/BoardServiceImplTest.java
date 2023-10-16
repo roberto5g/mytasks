@@ -7,7 +7,6 @@ import com.mytasks.app.dto.BoardResponse;
 import com.mytasks.app.dto.BoardResponseDetails;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.BoardNotFoundException;
-import com.mytasks.app.mapper.BoardMapper;
 import com.mytasks.app.model.Board;
 import com.mytasks.app.model.User;
 import com.mytasks.app.repository.BoardRepository;
@@ -23,6 +22,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.mytasks.app.mapper.BoardMapper.boardMapperInstance;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -138,7 +139,7 @@ class BoardServiceImplTest {
 
         when(boardRepository.findById(1L)).thenReturn(Optional.of(expectedBoard));
 
-        BoardResponseDetails expectedBoardDetails = BoardMapper.toBoardResponseDetails(expectedBoard);
+        BoardResponseDetails expectedBoardDetails = boardMapperInstance.toBoardResponseDetails(expectedBoard);
 
         BoardResponseDetails actualBoardDetails = boardService.getBoardDetailsById(1L);
 

@@ -4,9 +4,6 @@ import com.mytasks.app.dto.TaskRequest;
 import com.mytasks.app.dto.TaskResponse;
 import com.mytasks.app.exceptions.AccessForbiddenException;
 import com.mytasks.app.exceptions.TaskNotFoundException;
-import com.mytasks.app.mapper.BoardMapper;
-import com.mytasks.app.mapper.TaskMapper;
-import com.mytasks.app.mapper.UserMapper;
 import com.mytasks.app.model.Task;
 import com.mytasks.app.model.User;
 import com.mytasks.app.repository.BoardRepository;
@@ -20,6 +17,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static com.mytasks.app.mapper.BoardMapper.boardMapperInstance;
+import static com.mytasks.app.mapper.TaskMapper.taskMapperInstance;
+import static com.mytasks.app.mapper.UserMapper.userMapperInstance;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -39,7 +40,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponse> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
-        return TaskMapper.toDTOList(tasks);
+        return taskMapperInstance.toDTOList(tasks);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId).orElseThrow(
                 () -> new TaskNotFoundException(taskId)
         );
-        return TaskMapper.toTaskResponse(task);
+        return taskMapperInstance.toTaskResponse(task);
     }
 
     @Override
@@ -55,17 +56,17 @@ public class TaskServiceImpl implements TaskService {
         User creator = userService.getUserLogged();
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = UserMapper.toEntity(userService.getUserById(taskRequest.getAssignee()));
+            assignee = userMapperInstance.toEntity(userService.getUserById(taskRequest.getAssignee()));
         }
 
-        Task task = TaskMapper.toEntity(taskRequest);
+        Task task = taskMapperInstance.toEntity(taskRequest);
         task.setCreator(creator);
         task.setAssignee(assignee);
-        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
+        task.setBoard(boardMapperInstance.boardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
 
         task.setCreatedAt(LocalDateTime.now());
         Task createdTask = taskRepository.save(task);
-        return TaskMapper.toTaskResponse(createdTask);
+        return taskMapperInstance.toTaskResponse(createdTask);
     }
 
     @Override
@@ -75,17 +76,17 @@ public class TaskServiceImpl implements TaskService {
         );
         User assignee = null;
         if(taskRequest.getAssignee() != null){
-            assignee = UserMapper.toEntity(userService.getUserById(taskRequest.getAssignee()));
+            assignee = userMapperInstance.toEntity(userService.getUserById(taskRequest.getAssignee()));
         }
 
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setAssignee(assignee);
-        task.setBoard(BoardMapper.BoardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
+        task.setBoard(boardMapperInstance.boardResponseToBoardId(boardService.getBoardById(taskRequest.getBoardId())));
         task.setDueDate(taskRequest.getDueDate());
         task.setUpdatedAt(LocalDateTime.now());
         Task updatedTask = taskRepository.save(task);
-        return TaskMapper.toTaskResponse(updatedTask);
+        return taskMapperInstance.toTaskResponse(updatedTask);
     }
 
     @Override
